@@ -23,6 +23,7 @@ public class Product {
     private Integer id;
 
     private String productId;
+    @Enumerated(EnumType.STRING)
     private ProductType productType;
     private String productName;
     private Double price;

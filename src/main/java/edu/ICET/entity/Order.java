@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Table(name = "orders")
 public class Order {
 
     @Id
@@ -30,7 +31,7 @@ public class Order {
     private Double billValue;
 
     @ManyToOne
-    @JoinColumn(name ="customerId", nullable = false)
+    @JoinColumn(name ="customer_id", nullable = false)
     private Customer customer;
 
     @ManyToMany

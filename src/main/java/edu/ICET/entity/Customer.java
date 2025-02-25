@@ -38,6 +38,6 @@ public class Customer {
     private byte[] profilePic;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-    private List<Order> orderList;
+    private List<Order> orders;
 
 }
