@@ -13,8 +13,8 @@ public class CustomerDto {
     private Integer id;
     private String customerId;
     private String nic;
-    private String fName;
-    private String lName;
+    private String fstName;
+    private String lstName;
     private String email;
     private String contactNumber;
     private String address;

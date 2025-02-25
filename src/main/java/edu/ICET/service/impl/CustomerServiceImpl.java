@@ -38,4 +38,59 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerList;
     }
+
+
+    @Override
+    public CustomerDto searchByContactOrNic(String string) {
+
+        CustomerDto customer = new CustomerDto();
+
+        Customer customer1 = customerRepocitory.findByContactNumber(string);
+        Customer customer2 = customerRepocitory.findByNic(string);
+
+        if( customer1 != null){
+            return mapper.map(customer1 ,CustomerDto.class);
+        }
+       if( customer2 != null){
+           return  mapper.map(customer2,CustomerDto.class);
+       }
+
+     return  null;
+    }
+
+    @Override
+    public void deleteCustomerById(Integer id) {
+        customerRepocitory.deleteById(id);
+    }
+
+    @Override
+    public void updateCustomer(CustomerDto customerDto) {
+
+        customerRepocitory.save(mapper.map(customerDto , Customer.class));
+    }
+
+    @Override
+    public List<CustomerDto> searchByText(String text) {
+
+        List<CustomerDto> customerSearchRsult = new ArrayList<>();
+
+        List<Customer> customerList1 = customerRepocitory.findByFstName(text);
+
+        List<Customer> customerList2 = customerRepocitory.findByLstName(text);
+
+        List<Customer> customerList3 = customerRepocitory.findByCity(text);
+
+
+        customerList1.forEach(customer -> {
+            customerSearchRsult.add(mapper.map(customer , CustomerDto.class));
+        });
+        customerList2.forEach(customer -> {
+            customerSearchRsult.add(mapper.map(customer , CustomerDto.class));
+        });
+        customerList3.forEach(customer -> {
+            customerSearchRsult.add(mapper.map(customer , CustomerDto.class));
+        });
+
+        return customerSearchRsult;
+    }
 }
