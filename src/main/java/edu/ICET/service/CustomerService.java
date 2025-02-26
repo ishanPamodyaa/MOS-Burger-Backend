@@ -17,4 +17,6 @@ public interface CustomerService {
     void updateCustomer(CustomerDto customerDto);
 
     List<CustomerDto> searchByText(String text);
+
+     CustomerDto getCuatomerById(Integer id);
 }

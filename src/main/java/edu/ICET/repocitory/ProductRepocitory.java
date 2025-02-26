@@ -1,8 +1,13 @@
 package edu.ICET.repocitory;
 
 import edu.ICET.entity.Product;
+import edu.ICET.utill.ProductType;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 public interface ProductRepocitory extends JpaRepository<Product , Integer> {
 
+    List<Product> findByProductType(ProductType productType);
+    List<Product> findByProductName(String productName);
 }

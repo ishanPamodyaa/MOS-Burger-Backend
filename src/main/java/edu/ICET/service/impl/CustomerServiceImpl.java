@@ -93,4 +93,9 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerSearchRsult;
     }
+
+    @Override
+    public CustomerDto getCuatomerById(Integer id) {
+        return mapper.map(customerRepocitory.findById(id),CustomerDto.class);
+    }
 }

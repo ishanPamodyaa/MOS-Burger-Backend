@@ -38,8 +38,14 @@ public class CustomerController {
         customerService.deleteCustomerById(id);
     }
 
+    @GetMapping("/get-by-id/{id}")
+    public CustomerDto getCuatomerById(@PathVariable Integer id){
+        return customerService.getCuatomerById(id);
+    }
+
     @PutMapping("/update")
     public  void updateCustomer(@RequestBody CustomerDto customerDto){
+
         customerService.updateCustomer(customerDto);
     }
 
