@@ -22,5 +22,5 @@ public class CustomerDto {
     private String gender;
     private Date dateOfJoined;
     private byte[] profilePic;
-    private List<OrderDto> orders;
+    private List<Integer> orderIds;
 }

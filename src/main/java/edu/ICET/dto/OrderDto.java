@@ -2,6 +2,7 @@ package edu.ICET.dto;
 
 import edu.ICET.entity.Customer;
 import edu.ICET.entity.Order;
+import edu.ICET.entity.OrderDetail;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
@@ -14,15 +15,14 @@ import java.util.List;
 public class OrderDto {
 
     private Integer id;
-    private String orderId;
 
+    private String orderId;
     private Date orderDate;
     private Integer totalItems;
-
     private Double totalPrice;
     private Double totalDiscount;
     private Double billValue;
     private Integer customerId;
-    private List<ProductDto> products;
+    private List<OrderDetailsDto> orderDetails;
 
 }

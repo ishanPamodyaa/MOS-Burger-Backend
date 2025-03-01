@@ -36,8 +36,8 @@ public class Product {
     @Temporal(TemporalType.DATE)
     private Date expireDate;
 
-    @ManyToMany(mappedBy = "products")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List< OrderDetail> orderDetails;
 
 
 }
