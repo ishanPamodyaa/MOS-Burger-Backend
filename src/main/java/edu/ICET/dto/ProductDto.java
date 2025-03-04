@@ -13,7 +13,6 @@ import java.util.List;
 @Data
 public class ProductDto {
 
-    private Integer id;
     private String productId;
     private ProductType productType;
     private String productName;
@@ -22,5 +21,5 @@ public class ProductDto {
     private  Integer qtyInHand;
     private byte[] productImage;
     private Date expireDate;
-    private List<Integer> orderIds;
+    private List<String> orderIds;
 }

@@ -19,9 +19,6 @@ import java.util.List;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     private String productId;
     @Enumerated(EnumType.STRING)
     private ProductType productType;
@@ -38,6 +35,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List< OrderDetail> orderDetails;
+
 
 
 }

@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 public class OrderDto {
 
-    private Integer id;
 
     private String orderId;
     private Date orderDate;
@@ -22,7 +21,7 @@ public class OrderDto {
     private Double totalPrice;
     private Double totalDiscount;
     private Double billValue;
-    private Integer customerId;
+    private String customerId;
     private List<OrderDetailsDto> orderDetails;
 
 }

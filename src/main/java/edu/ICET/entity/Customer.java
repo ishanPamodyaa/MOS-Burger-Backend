@@ -18,9 +18,6 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     private String customerId;
     private String nic;
     private String fstName;

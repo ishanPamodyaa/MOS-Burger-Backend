@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class CustomerDto {
 
-    private Integer id;
+
     private String customerId;
     private String nic;
     private String fstName;
@@ -22,5 +22,5 @@ public class CustomerDto {
     private String gender;
     private Date dateOfJoined;
     private byte[] profilePic;
-    private List<Integer> orderIds;
+    private List<String> orderIds;
 }

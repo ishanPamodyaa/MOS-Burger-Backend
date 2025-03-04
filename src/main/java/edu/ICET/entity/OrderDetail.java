@@ -10,19 +10,23 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+//@IdClass(OrderDetails_pk.class)
 @Table(name = "orderDetail")
 public class OrderDetail {
 
-
+    @EmbeddedId
+    private OrderDetails_pk id;
     private Double price;
     private Double discount;
     private Integer orderQty;
+
     @ManyToOne
+    @MapsId("orderId")
     @JoinColumn(name="orderId", nullable = false)
     private Order order;
+
     @ManyToOne
-    @JoinColumn(name="productID", nullable = false)
+    @MapsId("productId")
+    @JoinColumn(name="productId", nullable = false)
     private Product product;
-
-
 }

@@ -1,8 +1,13 @@
 package edu.ICET.service.impl;
 
+import edu.ICET.dto.OrderDetailsDto;
 import edu.ICET.dto.OrderDto;
 import edu.ICET.entity.Order;
+import edu.ICET.entity.OrderDetail;
+import edu.ICET.entity.OrderDetails_pk;
+import edu.ICET.entity.Product;
 import edu.ICET.repocitory.OrderRepocitory;
+import edu.ICET.repocitory.ProductRepocitory;
 import edu.ICET.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,13 +21,42 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     final OrderRepocitory orderRepocitory;
+    final ProductRepocitory productRepocitory;
     final ModelMapper mapper;
 
     @Override
     public void addOrder(OrderDto orderDto) {
+//        orderRepocitory.save(mapper.map(orderDto , Order.class));
 
-        orderRepocitory.save(mapper.map(orderDto , Order.class));
+    Order order = mapper.map(orderDto , Order.class);
+    List<OrderDetail> orderDetail = new ArrayList<>();
 
+    for(OrderDetailsDto orderDetailsDto : orderDto.getOrderDetails()){
+//        OrderDetail orderDetailObj= new OrderDetail();
+//
+//        orderDetailObj.setOrderId(orderDto.getOrderId());
+//        orderDetailObj.setProductId(orderDetailsDto.getProductId());
+
+        Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId())
+                        .orElseThrow(() -> new RuntimeException("Product not found: " + orderDetailsDto.getProductId()));
+
+
+        OrderDetails_pk orderDetailsPk = new OrderDetails_pk(orderDto.getOrderId(), orderDetailsDto.getProductId());
+
+        OrderDetail orderDetailObj = new OrderDetail();
+
+        orderDetailObj.setId(orderDetailsPk);
+        orderDetailObj.setOrder(order);
+        orderDetailObj.setProduct(product);
+        orderDetailObj.setOrderQty(orderDetailsDto.getOrderQty());
+        orderDetailObj.setDiscount(orderDetailsDto.getDiscount());
+        orderDetailObj.setPrice(orderDetailsDto.getPrice());
+
+        orderDetail.add(orderDetailObj);
+    }
+
+    order.setOrderDetail(orderDetail);
+    orderRepocitory.save(order);
     }
 
     @Override

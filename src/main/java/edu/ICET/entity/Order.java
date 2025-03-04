@@ -19,8 +19,6 @@ import java.util.List;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
     private String orderId;
     @Temporal(TemporalType.DATE)
     private Date orderDate;
