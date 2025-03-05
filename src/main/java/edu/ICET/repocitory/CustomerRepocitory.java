@@ -4,6 +4,7 @@ import edu.ICET.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerRepocitory extends JpaRepository<Customer , Integer> {
 
@@ -13,4 +14,6 @@ public interface CustomerRepocitory extends JpaRepository<Customer , Integer> {
     List <Customer> findByLstName (String lstName);
     List <Customer> findByCity (String city);
 
+
+    Optional<Customer> findByCustomerId(String string);
 }

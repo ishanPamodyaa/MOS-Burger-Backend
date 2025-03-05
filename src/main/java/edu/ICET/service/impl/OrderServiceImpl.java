@@ -1,11 +1,10 @@
 package edu.ICET.service.impl;
 
+import edu.ICET.dto.CustomerDto;
 import edu.ICET.dto.OrderDetailsDto;
 import edu.ICET.dto.OrderDto;
-import edu.ICET.entity.Order;
-import edu.ICET.entity.OrderDetail;
-import edu.ICET.entity.OrderDetails_pk;
-import edu.ICET.entity.Product;
+import edu.ICET.entity.*;
+import edu.ICET.repocitory.CustomerRepocitory;
 import edu.ICET.repocitory.OrderRepocitory;
 import edu.ICET.repocitory.ProductRepocitory;
 import edu.ICET.service.OrderService;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +22,7 @@ public class OrderServiceImpl implements OrderService {
 
     final OrderRepocitory orderRepocitory;
     final ProductRepocitory productRepocitory;
+    final CustomerRepocitory customerRepocitory;
     final ModelMapper mapper;
 
     @Override
@@ -31,20 +32,12 @@ public class OrderServiceImpl implements OrderService {
     Order order = mapper.map(orderDto , Order.class);
     List<OrderDetail> orderDetail = new ArrayList<>();
 
-    for(OrderDetailsDto orderDetailsDto : orderDto.getOrderDetails()){
-//        OrderDetail orderDetailObj= new OrderDetail();
-//
-//        orderDetailObj.setOrderId(orderDto.getOrderId());
-//        orderDetailObj.setProductId(orderDetailsDto.getProductId());
-
+    for(OrderDetailsDto orderDetailsDto : orderDto.getOrderDetailsDto()){
         Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId())
                         .orElseThrow(() -> new RuntimeException("Product not found: " + orderDetailsDto.getProductId()));
 
-
         OrderDetails_pk orderDetailsPk = new OrderDetails_pk(orderDto.getOrderId(), orderDetailsDto.getProductId());
-
         OrderDetail orderDetailObj = new OrderDetail();
-
         orderDetailObj.setId(orderDetailsPk);
         orderDetailObj.setOrder(order);
         orderDetailObj.setProduct(product);
@@ -55,8 +48,18 @@ public class OrderServiceImpl implements OrderService {
         orderDetail.add(orderDetailObj);
     }
 
-    order.setOrderDetail(orderDetail);
+    order.setOrderDetails(orderDetail);
     orderRepocitory.save(order);
+
+     Optional<Customer> customerOpt = customerRepocitory.findByCustomerId(orderDto.getCustomerId());
+
+     CustomerDto customerDto =  mapper.map(customerOpt , CustomerDto.class);
+     List<String> orderIdList = new ArrayList<>() ;
+     orderIdList.add(orderDto.getOrderId());
+     customerDto.setOrderIds(orderIdList);
+        System.out.println("Customer DTo  " + customerDto);
+     customerRepocitory.save(mapper.map(customerDto ,Customer.class));
+
     }
 
     @Override

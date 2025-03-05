@@ -22,6 +22,6 @@ public class OrderDto {
     private Double totalDiscount;
     private Double billValue;
     private String customerId;
-    private List<OrderDetailsDto> orderDetails;
+    private List<OrderDetailsDto> orderDetailsDto;
 
 }
