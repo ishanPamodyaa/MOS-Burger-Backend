@@ -80,6 +80,8 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDto orderDto = mapper.map(orderRepocitory.findByOrderId(orderId) ,OrderDto.class) ;
 
+        CustomerDto customerDto = mapper.map(customerRepocitory.findByCustomerId(orderDto.getCustomerId()) , CustomerDto.class);
+        orderDto.setCustomerDto(customerDto);
         List <OrderDetail> orderDetailList = orderDetsilsRepocitory.findByOrderOrderId(orderId);
 
         List <OrderDetailsDto> orderDetailsDtoList =  orderDetailList.stream()
