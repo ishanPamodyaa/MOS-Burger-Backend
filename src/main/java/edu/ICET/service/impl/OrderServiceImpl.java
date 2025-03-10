@@ -5,6 +5,7 @@ import edu.ICET.dto.OrderDetailsDto;
 import edu.ICET.dto.OrderDto;
 import edu.ICET.entity.*;
 import edu.ICET.repocitory.CustomerRepocitory;
+import edu.ICET.repocitory.OrderDetsilsRepocitory;
 import edu.ICET.repocitory.OrderRepocitory;
 import edu.ICET.repocitory.ProductRepocitory;
 import edu.ICET.service.OrderService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
 
     final OrderRepocitory orderRepocitory;
     final ProductRepocitory productRepocitory;
+    final OrderDetsilsRepocitory orderDetsilsRepocitory;
     final CustomerRepocitory customerRepocitory;
     final ModelMapper mapper;
 
@@ -73,9 +76,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDto getOrder(Integer id) {
+    public OrderDto getOrder(String  orderId) {
 
-        return mapper.map(orderRepocitory.findById(id) ,OrderDto.class) ;
+        OrderDto orderDto = mapper.map(orderRepocitory.findByOrderId(orderId) ,OrderDto.class) ;
+
+        List <OrderDetail> orderDetailList = orderDetsilsRepocitory.findByOrderOrderId(orderId);
+
+        List <OrderDetailsDto> orderDetailsDtoList =  orderDetailList.stream()
+                .map(orderDetail -> mapper.map(orderDetail , OrderDetailsDto.class))
+                .collect(Collectors.toList());
+
+        orderDto.setOrderDetailsDto(orderDetailsDtoList);
+
+        return orderDto;
     }
 
     @Override
@@ -89,8 +102,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteOrder(Integer id) {
-        orderRepocitory.deleteById(id);
+    public void deleteOrder(String  orderId) {
+        orderRepocitory.deleteById(orderId);
     }
 
 

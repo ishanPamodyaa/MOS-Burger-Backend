@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface OrderDetsilsRepocitory extends JpaRepository<OrderDetail, OrderDetails_pk> {
 
-List<OrderDetail> finfByOrder_OrderID (String orderId);
+List<OrderDetail> findByOrderOrderId (String orderId);
 
 }

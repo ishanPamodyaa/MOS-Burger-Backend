@@ -22,9 +22,9 @@ public class OrderController {
         orderService.addOrder(orderDto);
     }
 
-    @GetMapping("/getOrderById/{id}")
-    public OrderDto getOrder(@PathVariable Integer id){
-        return orderService.getOrder(id);
+    @GetMapping("/getOrderById")
+    public OrderDto getOrder(@RequestParam String orderId){
+        return orderService.getOrder(orderId);
     }
 
     @GetMapping("/getAll")
@@ -33,8 +33,8 @@ public class OrderController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteOrder (@PathVariable Integer id){
-         orderService.deleteOrder(id);
+    public void deleteOrder (@PathVariable String orderId){
+         orderService.deleteOrder(orderId);
     }
 
     @GetMapping("/search-by-name/{name}")

@@ -9,11 +9,11 @@ public interface OrderService {
 
     List<OrderDto> getAllOrders();
 
-    OrderDto getOrder(Integer id);
+    OrderDto getOrder(String  orderId);
 
     OrderDto getOrderByName(String name);
 
     OrderDto getOrderContactNumber(String contactNumber);
 
-    void deleteOrder(Integer id);
+    void deleteOrder(String orderId);
 }
