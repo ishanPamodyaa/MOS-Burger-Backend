@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerRepocitory extends JpaRepository<Customer , Integer> {
+public interface CustomerRepocitory extends JpaRepository<Customer , String> {
 
     Customer findByContactNumber (String contactNumber);
     Customer findByNic (String nic);
@@ -16,4 +16,5 @@ public interface CustomerRepocitory extends JpaRepository<Customer , Integer> {
 
 
     Optional<Customer> findByCustomerId(String string);
+    void deleteByCustomerId(String string);
 }

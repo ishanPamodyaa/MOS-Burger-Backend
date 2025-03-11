@@ -12,11 +12,11 @@ public interface CustomerService {
 
     CustomerDto searchByContactOrNic (String string);
 
-    void deleteCustomerById(Integer id);
+    void deleteCustomerById(String customerId);
 
     void updateCustomer(CustomerDto customerDto);
 
     List<CustomerDto> searchByText(String text);
 
-     CustomerDto getCuatomerById(Integer id);
+     CustomerDto getCuatomerById(String customerId);
 }

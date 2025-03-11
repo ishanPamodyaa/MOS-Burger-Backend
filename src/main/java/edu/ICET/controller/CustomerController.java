@@ -33,14 +33,14 @@ public class CustomerController {
         return  customerService.searchByContactOrNic(string);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteCuatomerById(@PathVariable Integer id){
-        customerService.deleteCustomerById(id);
+    @DeleteMapping("/delete")
+    public void deleteCuatomerById(@RequestParam String customerId){
+        customerService.deleteCustomerById(customerId);
     }
 
-    @GetMapping("/get-by-id/{id}")
-    public CustomerDto getCuatomerById(@PathVariable Integer id){
-        return customerService.getCuatomerById(id);
+    @GetMapping("/get-by-id")
+    public CustomerDto getCuatomerById(@RequestParam String customerId){
+        return customerService.getCuatomerById(customerId);
     }
 
     @PutMapping("/update")

@@ -59,8 +59,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void deleteCustomerById(Integer id) {
-        customerRepocitory.deleteById(id);
+    public void deleteCustomerById(String customerId) {
+        customerRepocitory.deleteByCustomerId(customerId);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDto getCuatomerById(Integer id) {
-        return mapper.map(customerRepocitory.findById(id),CustomerDto.class);
+    public CustomerDto getCuatomerById(String customerId) {
+        return mapper.map(customerRepocitory.findByCustomerId(customerId),CustomerDto.class);
     }
 }

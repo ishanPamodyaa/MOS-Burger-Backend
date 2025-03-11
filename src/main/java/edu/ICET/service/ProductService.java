@@ -12,13 +12,13 @@ public interface ProductService {
 
     List <ProductDto> searchByProductType(ProductType productType);
 
-    void deleteProductById(Integer id);
+    void deleteProductById(String productId);
 
     void updateProduct(ProductDto productDto);
 
     List<ProductDto> searchByName(String name);
 
-    ProductDto searchById(Integer id);
+    ProductDto searchById(String productId);
 
-    boolean isAvailable(Integer id);
+    boolean isAvailable(String productId);
 }

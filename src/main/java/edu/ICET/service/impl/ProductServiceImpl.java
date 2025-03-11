@@ -40,10 +40,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> searchByProductType(ProductType productType) {
 
+        System.out.println(productType);
         List <ProductDto> productSearchResult = new ArrayList<>();
 
         List <Product> result = productRepocitory.findByProductType(productType);
-        System.out.println("service    "+result);
+//        System.out.println("service    "+result);
         result.forEach(product -> {
             productSearchResult.add(mapper.map(product,ProductDto.class));
         });
@@ -52,9 +53,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(Integer id) {
+    public void deleteProductById(String productId) {
 
-        productRepocitory.deleteById(id);
+        productRepocitory.deleteByProductId(productId);
     }
 
     @Override
@@ -75,13 +76,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto searchById(Integer id) {
-        return mapper.map(productRepocitory.findById(id) , ProductDto.class );
+    public ProductDto searchById(String productId) {
+        return mapper.map(productRepocitory.findByProductId(productId) , ProductDto.class );
     }
 
     @Override
-    public boolean isAvailable(Integer id) {
-        return productRepocitory.findById(id).get().getQtyInHand() != 0;
+    public boolean isAvailable(String productId) {
+        return productRepocitory.findByProductId(productId).get().getQtyInHand() != 0;
     }
 //    @Override
 //    public boolean isExpired(Integer id) {

@@ -35,9 +35,9 @@ public class ProductController {
         return  productService.searchByProductType(productType);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteProductById(@PathVariable Integer id){
-        productService.deleteProductById(id);
+    @DeleteMapping("/delete")
+    public void deleteProductById(@RequestParam String productId){
+        productService.deleteProductById(productId);
     }
 
     @PutMapping("/update")
@@ -51,14 +51,14 @@ public class ProductController {
         return productService.searchByName(name);
     }
 
-    @GetMapping("/search-by-id/{id}")
-    public ProductDto searchById (@PathVariable Integer id){
-        return  productService.searchById(id);
+    @GetMapping("/search-by-id")
+    public ProductDto searchById (@RequestParam String productId){
+        return  productService.searchById(productId);
     }
 
-    @GetMapping("/{id}")
-    public boolean isAvailable(@PathVariable Integer id){
-        return productService.isAvailable(id);
+    @GetMapping("/isAvailable")
+    public boolean isAvailable(@RequestParam String productId){
+        return productService.isAvailable(productId);
     }
 
 
