@@ -3,6 +3,7 @@ package edu.ICET.service.impl;
 import edu.ICET.dto.CustomerDto;
 import edu.ICET.dto.OrderDetailsDto;
 import edu.ICET.dto.OrderDto;
+import edu.ICET.dto.ProductDto;
 import edu.ICET.entity.*;
 import edu.ICET.repocitory.CustomerRepocitory;
 import edu.ICET.repocitory.OrderDetsilsRepocitory;
@@ -30,26 +31,39 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void addOrder(OrderDto orderDto) {
-//        orderRepocitory.save(mapper.map(orderDto , Order.class));
+        if (orderDto.getOrderDetailsDto() == null || orderDto.getOrderDetailsDto().isEmpty()) {
+            throw new RuntimeException("Order must contain at least one product");
+        }
 
-    Order order = mapper.map(orderDto , Order.class);
-    List<OrderDetail> orderDetail = new ArrayList<>();
+        Order order = mapper.map(orderDto, Order.class);
+        List<OrderDetail> orderDetail = new ArrayList<>();
+    
+        // Validate all products exist before processing
+        for (OrderDetailsDto orderDetailsDto : orderDto.getOrderDetailsDto()) {
+            Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + orderDetailsDto.getProductId()));
+            
+            // Validate product quantity
+            if (product.getQtyInHand() < orderDetailsDto.getOrderQty()) {
+                throw new RuntimeException("Insufficient stock for product: " + orderDetailsDto.getProductId());
+            }
+        }
+    
+        // Process order details
+        for (OrderDetailsDto orderDetailsDto : orderDto.getOrderDetailsDto()) {
+            Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId()).get();
 
-    for(OrderDetailsDto orderDetailsDto : orderDto.getOrderDetailsDto()){
-        Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Product not found: " + orderDetailsDto.getProductId()));
+            OrderDetails_pk orderDetailsPk = new OrderDetails_pk(orderDto.getOrderId(), orderDetailsDto.getProductId());
+            OrderDetail orderDetailObj = new OrderDetail();
+            orderDetailObj.setId(orderDetailsPk);
+            orderDetailObj.setOrder(order);
+            orderDetailObj.setProduct(product);
+            orderDetailObj.setOrderQty(orderDetailsDto.getOrderQty());
+            orderDetailObj.setDiscount(orderDetailsDto.getDiscount());
+            orderDetailObj.setPrice(orderDetailsDto.getPrice());
 
-        OrderDetails_pk orderDetailsPk = new OrderDetails_pk(orderDto.getOrderId(), orderDetailsDto.getProductId());
-        OrderDetail orderDetailObj = new OrderDetail();
-        orderDetailObj.setId(orderDetailsPk);
-        orderDetailObj.setOrder(order);
-        orderDetailObj.setProduct(product);
-        orderDetailObj.setOrderQty(orderDetailsDto.getOrderQty());
-        orderDetailObj.setDiscount(orderDetailsDto.getDiscount());
-        orderDetailObj.setPrice(orderDetailsDto.getPrice());
-
-        orderDetail.add(orderDetailObj);
-    }
+            orderDetail.add(orderDetailObj);
+        }
 
     order.setOrderDetails(orderDetail);
     orderRepocitory.save(order);
@@ -62,6 +76,16 @@ public class OrderServiceImpl implements OrderService {
      customerDto.setOrderIds(orderIdList);
         System.out.println("Customer DTo  " + customerDto);
      customerRepocitory.save(mapper.map(customerDto ,Customer.class));
+
+     List<OrderDetail> orderDetailList = orderDetsilsRepocitory.findByOrderOrderId(orderDto.getOrderId());
+
+     orderDetailList.forEach(orderDetail1 -> {
+        ProductDto productdto = mapper.map(productRepocitory.findByProductId(orderDetail1.getId().getProductId()),ProductDto.class);
+        productdto.setQtyInHand(productdto.getQtyInHand()-orderDetail1.getOrderQty());
+        productRepocitory.save( mapper.map(productdto,Product.class));
+     });
+
+
 
     }
 
