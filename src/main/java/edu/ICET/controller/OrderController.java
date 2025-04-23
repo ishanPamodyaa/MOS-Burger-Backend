@@ -55,18 +55,20 @@ public class OrderController {
 
     @GetMapping("/report/{orderId}")
     public ResponseEntity<byte[]> generateOrderReport(@PathVariable String orderId) {
+
+        System.out.println("order id  = "+ orderId);
         try {
-            byte[] report = reportService.generateOrderReport(orderId);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=order_" + orderId + ".pdf")
+            byte[] pdf = reportService.generateOrderReport(orderId);
+              return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice_" + orderId + ".pdf")
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(report);
+                    .body(pdf);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
-    @GetMapping("/report/all")
+    @GetMapping("/invoice/all")
     public ResponseEntity<byte[]> generateAllOrdersReport() {
         try {
             byte[] report = reportService.generateAllOrdersReport();
@@ -75,6 +77,20 @@ public class OrderController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(report);
         } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/invoice/{orderId}")
+    public ResponseEntity<byte[]> generateInvoice(@PathVariable String orderId) {
+        try {
+            byte[] invoice = orderService.generateInvoice(orderId);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice_" + orderId + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(invoice);
+        } catch (Exception e) {
+            e.printStackTrace(); // For debugging
             return ResponseEntity.internalServerError().build();
         }
     }

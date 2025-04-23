@@ -16,4 +16,6 @@ public interface OrderService {
     OrderDto getOrderContactNumber(String contactNumber);
 
     void deleteOrder(String orderId);
+
+    byte[] generateInvoice(String orderId) throws Exception;
 }

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="order_invice" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <parameter name="order_id" class="java.lang.String"/>
+    
+    <queryString language="SQL">
+        <![CDATA[
+        SELECT
+            o.order_id,
+            o.order_date,
+            o.customer_id,
+            o.total_price,
+            o.bill_value,
+            o.total_discount,
+            od.product_product_id,
+            od.order_qty,
+            od.price,
+            od.discount
+        FROM
+            orders o
+        JOIN
+            order_detail od ON o.order_id = od.order_order_id
+        WHERE
+            o.order_id = $P{order_id}
+        ]]>
+    </queryString>
+
+    <field name="order_id" class="java.lang.String"/>
+    <field name="order_date" class="java.sql.Date"/>
+    <field name="customer_id" class="java.lang.String"/>
+    <field name="total_price" class="java.lang.Double"/>
+    <field name="total_discount" class="java.lang.Double"/>
+    <field name="product_product_id" class="java.lang.String"/>
+    <field name="order_qty" class="java.lang.Integer"/>
+    <field name="price" class="java.lang.Double"/>
+    <field name="discount" class="java.lang.Double"/>
+    <field name="bill_value" class="java.lang.Double"/>
+
+    <background/>
+
+    <title>
+        <band height="37">
+            <staticText>
+                <reportElement x="204" y="-2" width="153" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[MOS BURGER]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="71">
+            <staticText>
+                <reportElement x="0" y="13" width="60" height="17"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[INVOICE]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="421" y="0" width="30" height="17"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[Date]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="421" y="17" width="39" height="17"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[Order ID]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="421" y="34" width="59" height="17"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[Customer ID]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="480" y="0" width="3" height="17"/>
+                <text><![CDATA[:]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="480" y="17" width="3" height="17"/>
+                <text><![CDATA[:]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="480" y="34" width="3" height="17"/>
+                <text><![CDATA[:]]></text>
+            </staticText>
+
+            <textField pattern="dd/MM/yyyy">
+                <reportElement x="484" y="0" width="74" height="17"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{order_date}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="484" y="18" width="74" height="16"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{order_id}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="484" y="34" width="74" height="17"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{customer_id}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <band height="38">
+            <staticText>
+                <reportElement x="79" y="0" width="100" height="30"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Product ID]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="180" y="0" width="100" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="280" y="0" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Price]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="380" y="0" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Discount]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="30">
+            <textField>
+                <reportElement x="80" y="0" width="100" height="30"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{product_product_id}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="180" y="0" width="100" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{order_qty}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="280" y="0" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="380" y="0" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{discount}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <columnFooter>
+        <band height="102">
+            <textField pattern="#,##0.00">
+                <reportElement x="380" y="0" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{total_price}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="280" y="0" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="10"/>
+                </textElement>
+                <text><![CDATA[Total Price]]></text>
+            </staticText>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="380" y="30" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{total_discount}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="281" y="30" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <text><![CDATA[Total Discount]]></text>
+            </staticText>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="380" y="70" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{bill_value}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="281" y="70" width="100" height="30"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Bill Amount]]></text>
+            </staticText>
+        </band>
+    </columnFooter>
+
+    <pageFooter>
+        <band height="40">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="10"/>
+                </textElement>
+                <text><![CDATA[Thank you for your business!]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
+
+</jasperReport>
