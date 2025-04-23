@@ -18,4 +18,6 @@ public interface OrderService {
     void deleteOrder(String orderId);
 
     byte[] generateInvoice(String orderId) throws Exception;
+
+    byte[] generateAllOrdersReport() throws Exception;
 }

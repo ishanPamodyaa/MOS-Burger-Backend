@@ -2,9 +2,7 @@ package edu.ICET.controller;
 
 
 import edu.ICET.dto.OrderDto;
-import edu.ICET.entity.Order;
 import edu.ICET.service.OrderService;
-import edu.ICET.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 public class OrderController {
     
     final OrderService orderService;
-    final ReportService reportService;
+//    final ReportService reportService;
 
     @PostMapping("/add")
     public void addOrder(@RequestBody OrderDto orderDto){
@@ -53,25 +51,25 @@ public class OrderController {
         return orderService.getOrderContactNumber(contactNumber);
     }
 
-    @GetMapping("/report/{orderId}")
-    public ResponseEntity<byte[]> generateOrderReport(@PathVariable String orderId) {
-
-        System.out.println("order id  = "+ orderId);
-        try {
-            byte[] pdf = reportService.generateOrderReport(orderId);
-              return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice_" + orderId + ".pdf")
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(pdf);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+//    @GetMapping("/report/{orderId}")
+//    public ResponseEntity<byte[]> generateOrderReport(@PathVariable String orderId) {
+//
+//        System.out.println("order id  = "+ orderId);
+//        try {
+//            byte[] pdf = reportService.generateOrderReport(orderId);
+//              return ResponseEntity.ok()
+//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice_" + orderId + ".pdf")
+//                    .contentType(MediaType.APPLICATION_PDF)
+//                    .body(pdf);
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
 
     @GetMapping("/invoice/all")
     public ResponseEntity<byte[]> generateAllOrdersReport() {
         try {
-            byte[] report = reportService.generateAllOrdersReport();
+            byte[] report = orderService.generateAllOrdersReport();
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=all_orders.pdf")
                     .contentType(MediaType.APPLICATION_PDF)

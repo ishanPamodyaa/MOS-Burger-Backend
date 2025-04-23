@@ -236,7 +236,7 @@
                 <textElement textAlignment="Center">
                     <font size="10"/>
                 </textElement>
-                <text><![CDATA[Thank you for your business!]]></text>
+                <text><![CDATA[Thank you ]]></text>
             </staticText>
         </band>
     </pageFooter>

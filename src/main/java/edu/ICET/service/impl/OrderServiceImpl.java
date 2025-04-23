@@ -11,6 +11,7 @@ import edu.ICET.repocitory.OrderRepocitory;
 import edu.ICET.repocitory.ProductRepocitory;
 import edu.ICET.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
@@ -18,12 +19,15 @@ import org.springframework.util.ResourceUtils;
 import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+//import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.parameters;
 
 @Service
 @RequiredArgsConstructor
@@ -143,28 +147,43 @@ public class OrderServiceImpl implements OrderService {
 @Override
 public byte[] generateInvoice(String orderId) throws Exception {
     try {
-        // Load the report template
         File file = ResourceUtils.getFile("classpath:reports/order_invice.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        
-        // Set parameters
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("order_id", orderId);
-        
-        // Create the JasperPrint object
+
         JasperPrint print = JasperFillManager.fillReport(
             jasperReport,
             parameters,
             dataSource.getConnection()
         );
-        
-        // Export to PDF
         return JasperExportManager.exportReportToPdf(print);
     } catch (Exception e) {
-        e.printStackTrace(); // For debugging
+        e.printStackTrace();
         throw e;
     }
 }
+
+
+    public byte[] generateAllOrdersReport() throws Exception {
+
+    try{
+        File file = ResourceUtils.getFile("classpath:reports/allOrderReport.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                jasperReport,
+                new HashMap<>(),
+                dataSource.getConnection()
+        );
+
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }catch (Exception e) {
+        e.printStackTrace();
+        throw e;
+    }
+    }
 
 
 
