@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Date;
 
 //import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.parameters;
 
@@ -41,28 +43,32 @@ public class OrderServiceImpl implements OrderService {
     final DataSource dataSource;
 
     @Override
+    @Transactional
     public void addOrder(OrderDto orderDto) {
         if (orderDto.getOrderDetailsDto() == null || orderDto.getOrderDetailsDto().isEmpty()) {
             throw new RuntimeException("Order must contain at least one product");
         }
 
+        Customer customer = customerRepocitory.findByCustomerId(orderDto.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + orderDto.getCustomerId()));
+
         Order order = mapper.map(orderDto, Order.class);
-        List<OrderDetail> orderDetail = new ArrayList<>();
-    
-        // Validate all products exist before processing
+        order.setCustomer(customer);
+
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+
+        // Process order details and validate stock
         for (OrderDetailsDto orderDetailsDto : orderDto.getOrderDetailsDto()) {
             Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + orderDetailsDto.getProductId()));
-            
-            // Validate product quantity
+
             if (product.getQtyInHand() < orderDetailsDto.getOrderQty()) {
                 throw new RuntimeException("Insufficient stock for product: " + orderDetailsDto.getProductId());
             }
-        }
-    
-        // Process order details
-        for (OrderDetailsDto orderDetailsDto : orderDto.getOrderDetailsDto()) {
-            Product product = productRepocitory.findByProductId(orderDetailsDto.getProductId()).get();
+
+            // Update quantity in hand
+            product.setQtyInHand(product.getQtyInHand() - orderDetailsDto.getOrderQty());
+            productRepocitory.save(product);
 
             OrderDetails_pk orderDetailsPk = new OrderDetails_pk(orderDto.getOrderId(), orderDetailsDto.getProductId());
             OrderDetail orderDetailObj = new OrderDetail();
@@ -73,54 +79,51 @@ public class OrderServiceImpl implements OrderService {
             orderDetailObj.setDiscount(orderDetailsDto.getDiscount());
             orderDetailObj.setPrice(orderDetailsDto.getPrice());
 
-            orderDetail.add(orderDetailObj);
+            orderDetailList.add(orderDetailObj);
         }
 
-    order.setOrderDetails(orderDetail);
-    orderRepocitory.save(order);
-
-     Optional<Customer> customerOpt = customerRepocitory.findByCustomerId(orderDto.getCustomerId());
-
-     CustomerDto customerDto =  mapper.map(customerOpt , CustomerDto.class);
-     List<String> orderIdList = new ArrayList<>() ;
-     orderIdList.add(orderDto.getOrderId());
-     customerDto.setOrderIds(orderIdList);
-        System.out.println("Customer DTo  " + customerDto);
-     customerRepocitory.save(mapper.map(customerDto ,Customer.class));
-
-     List<OrderDetail> orderDetailList = orderDetsilsRepocitory.findByOrderOrderId(orderDto.getOrderId());
-
-     orderDetailList.forEach(orderDetail1 -> {
-        ProductDto productdto = mapper.map(productRepocitory.findByProductId(orderDetail1.getId().getProductId()),ProductDto.class);
-        productdto.setQtyInHand(productdto.getQtyInHand()-orderDetail1.getOrderQty());
-        productRepocitory.save( mapper.map(productdto,Product.class));
-     });
-
-
-
+        order.setOrderDetails(orderDetailList);
+        orderRepocitory.save(order);
     }
 
     @Override
     public List<OrderDto> getAllOrders() {
         List<OrderDto> orderResults = new ArrayList<>();
         List<Order> results = orderRepocitory.findAll();
+
         results.forEach(order -> {
-            orderResults.add(mapper.map(order ,OrderDto.class));
+            OrderDto orderDto = mapper.map(order, OrderDto.class);
+
+            // Populate CustomerDto
+            if (order.getCustomer() != null) {
+                orderDto.setCustomerDto(mapper.map(order.getCustomer(), CustomerDto.class));
+            }
+
+            // Populate OrderDetailsDto
+            if (order.getOrderDetails() != null) {
+                List<OrderDetailsDto> details = order.getOrderDetails().stream()
+                        .map(detail -> mapper.map(detail, OrderDetailsDto.class))
+                        .collect(Collectors.toList());
+                orderDto.setOrderDetailsDto(details);
+            }
+
+            orderResults.add(orderDto);
         });
         return orderResults;
     }
 
     @Override
-    public OrderDto getOrder(String  orderId) {
+    public OrderDto getOrder(String orderId) {
 
-        OrderDto orderDto = mapper.map(orderRepocitory.findByOrderId(orderId) ,OrderDto.class) ;
+        OrderDto orderDto = mapper.map(orderRepocitory.findByOrderId(orderId), OrderDto.class);
 
-        CustomerDto customerDto = mapper.map(customerRepocitory.findByCustomerId(orderDto.getCustomerId()) , CustomerDto.class);
+        CustomerDto customerDto = mapper.map(customerRepocitory.findByCustomerId(orderDto.getCustomerId()),
+                CustomerDto.class);
         orderDto.setCustomerDto(customerDto);
-        List <OrderDetail> orderDetailList = orderDetsilsRepocitory.findByOrderOrderId(orderId);
+        List<OrderDetail> orderDetailList = orderDetsilsRepocitory.findByOrderOrderId(orderId);
 
-        List <OrderDetailsDto> orderDetailsDtoList =  orderDetailList.stream()
-                .map(orderDetail -> mapper.map(orderDetail , OrderDetailsDto.class))
+        List<OrderDetailsDto> orderDetailsDtoList = orderDetailList.stream()
+                .map(orderDetail -> mapper.map(orderDetail, OrderDetailsDto.class))
                 .collect(Collectors.toList());
 
         orderDto.setOrderDetailsDto(orderDetailsDtoList);
@@ -139,54 +142,46 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteOrder(String  orderId) {
+    public void deleteOrder(String orderId) {
         orderRepocitory.deleteById(orderId);
     }
 
-    
-@Override
-public byte[] generateInvoice(String orderId) throws Exception {
-    try {
-        File file = ResourceUtils.getFile("classpath:reports/order_invice.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+    @Override
+    public byte[] generateInvoice(String orderId) throws Exception {
+        try {
+            File file = ResourceUtils.getFile("classpath:reports/order_invice.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("order_id", orderId);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("order_id", orderId);
 
-        JasperPrint print = JasperFillManager.fillReport(
-            jasperReport,
-            parameters,
-            dataSource.getConnection()
-        );
-        return JasperExportManager.exportReportToPdf(print);
-    } catch (Exception e) {
-        e.printStackTrace();
-        throw e;
+            JasperPrint print = JasperFillManager.fillReport(
+                    jasperReport,
+                    parameters,
+                    dataSource.getConnection());
+            return JasperExportManager.exportReportToPdf(print);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
-}
-
 
     public byte[] generateAllOrdersReport() throws Exception {
 
-    try{
-        File file = ResourceUtils.getFile("classpath:reports/allOrderReport.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        try {
+            File file = ResourceUtils.getFile("classpath:reports/allOrderReport.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
 
-        JasperPrint jasperPrint = JasperFillManager.fillReport(
-                jasperReport,
-                new HashMap<>(),
-                dataSource.getConnection()
-        );
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    jasperReport,
+                    new HashMap<>(),
+                    dataSource.getConnection());
 
-        return JasperExportManager.exportReportToPdf(jasperPrint);
-    }catch (Exception e) {
-        e.printStackTrace();
-        throw e;
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
-    }
-
-
-
 
 }
-

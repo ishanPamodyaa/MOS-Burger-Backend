@@ -8,6 +8,7 @@ import edu.ICET.utill.ProductType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
     final ProductRepocitory productRepocitory;
@@ -26,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List <ProductDto> getAllProducts() {
+    public List<ProductDto> getAllProducts() {
         List<ProductDto> productSearchResult = new ArrayList<>();
 
         List<Product> all = productRepocitory.findAll();
@@ -41,12 +43,12 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> searchByProductType(ProductType productType) {
 
         System.out.println(productType);
-        List <ProductDto> productSearchResult = new ArrayList<>();
+        List<ProductDto> productSearchResult = new ArrayList<>();
 
-        List <Product> result = productRepocitory.findByProductType(productType);
-//        System.out.println("service    "+result);
+        List<Product> result = productRepocitory.findByProductType(productType);
+        // System.out.println("service "+result);
         result.forEach(product -> {
-            productSearchResult.add(mapper.map(product,ProductDto.class));
+            productSearchResult.add(mapper.map(product, ProductDto.class));
         });
 
         return productSearchResult;
@@ -60,16 +62,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void updateProduct(ProductDto productDto) {
-        productRepocitory.save(mapper.map(productDto ,Product.class));
+        productRepocitory.save(mapper.map(productDto, Product.class));
     }
 
     @Override
     public List<ProductDto> searchByName(String name) {
         List<ProductDto> productSearchResult = new ArrayList<>();
-        List <Product> result = productRepocitory.findByProductName(name);
+        List<Product> result = productRepocitory.findByProductName(name);
 
         result.forEach(product -> {
-            productSearchResult.add(mapper.map(product ,ProductDto.class));
+            productSearchResult.add(mapper.map(product, ProductDto.class));
         });
 
         return productSearchResult;
@@ -77,15 +79,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto searchById(String productId) {
-        return mapper.map(productRepocitory.findByProductId(productId) , ProductDto.class );
+        return mapper.map(productRepocitory.findByProductId(productId), ProductDto.class);
     }
 
     @Override
     public boolean isAvailable(String productId) {
         return productRepocitory.findByProductId(productId).get().getQtyInHand() != 0;
     }
-//    @Override
-//    public boolean isExpired(Integer id) {
-//        return productRepocitory.findById(id).get().getQtyInHand() != 0;
-//    }
+    // @Override
+    // public boolean isExpired(Integer id) {
+    // return productRepocitory.findById(id).get().getQtyInHand() != 0;
+    // }
 }
